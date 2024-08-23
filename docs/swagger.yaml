@@ -1,0 +1,8 @@
+host: localhost:9527/docs/index.html
+info:
+  contact: {}
+  description: 对MAC系统下的文件简单操作的API
+  title: soraka API
+  version: 1.0.0
+paths: {}
+swagger: "2.0"

@@ -1,0 +1,11 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "对MAC系统下的文件简单操作的API",
+        "title": "soraka API",
+        "contact": {},
+        "version": "1.0.0"
+    },
+    "host": "localhost:9527/docs/index.html",
+    "paths": {}
+}
