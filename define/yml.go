@@ -2,53 +2,31 @@ package define
 
 import (
 	"fmt"
-	"github.com/knadh/koanf"
+	"github.com/loebfly/ezgin/ezcfg"
 	"strings"
 	"time"
 )
 
-/*
-disk: # 磁盘路径
-  listen:
-    path: # 磁盘装载路径
-      - "/System/Volumes/Data" # 本机磁盘路径
-      - "/Volumes/QingGe"
-    interval: 60 # 监听磁盘路径间隔, 默认为60秒
-  clean: # 清理磁盘配置
-    "/System/Volumes/Data": # 和listen.path一一对应
-       - "/Users/luchunqing/Desktop/temp" # 需要清理的文件路径
-    "/Volumes/QingGe":
-       - "/Volumes/QingGe/temp"
-    rule: # 清理规则
-      when_usage: 80 # 当磁盘使用率超过多少时, 默认为80%
-      include_suffix: "" # 包含规则, 默认包含所有文件
-      exclude_suffix: "" # 排除规则, 默认为不排除任何文件
-      before_time: 0 # 清理多少天之前的文件, 默认为0天，表示不限制，允许删所有指定路径下的所有文件
-*/
-
 const (
-	ymlDiskListenPath             = "disk.listen.path"     // 磁盘装载路径列表(字符串数组)
-	ymlDiskListenInterval         = "disk.listen.interval" // 监听磁盘路径间隔（Int）
-	ymlDiskCleanPrefix            = "disk.clean"           // 清理磁盘配置
-	ymlDiskCleanXPath             = "disk.clean.%s"        // 清理磁盘配置路径
-	ymlDiskCleanRuleWhenUsage     = "rule.when_usage"      // 当磁盘使用率超过多少时
-	ymlDiskCleanRuleIncludeSuffix = "rule.include_suffix"  // 包含规则
-	ymlDiskCleanRuleExcludeSuffix = "rule.exclude_suffix"  // 排除规则
-	ymlDiskCleanRuleBeforeTime    = "rule.before_time"     // 清理多少天之前的文件
+	ymlDiskListenPath             = "disk.listen.path"               // 磁盘装载路径列表(字符串数组)
+	ymlDiskListenInterval         = "disk.listen.interval"           // 监听磁盘路径间隔（Int）
+	ymlDiskCleanXPath             = "disk.clean.%s"                  // 清理磁盘配置路径
+	ymlDiskCleanRuleWhenUsage     = "disk.clean.rule.when_usage"     // 当磁盘使用率超过多少时
+	ymlDiskCleanRuleIncludeSuffix = "disk.clean.rule.include_suffix" // 包含规则
+	ymlDiskCleanRuleExcludeSuffix = "disk.clean.rule.exclude_suffix" // 排除规则
+	ymlDiskCleanRuleBeforeTime    = "disk.clean.rule.before_time"    // 清理多少天之前的文件
 )
 
-type yml struct {
-	data *koanf.Koanf
-}
+type yml int
 
-var Yml yml
+const Yml = yml(0)
 
 func (receiver yml) DiskListenPaths() []string {
-	return receiver.data.Get(ymlDiskListenPath).([]string)
+	return ezcfg.GetArray[string](ymlDiskListenPath)
 }
 
 func (receiver yml) DiskListenInterval() time.Duration {
-	return time.Duration(receiver.data.Int64(ymlDiskListenInterval)) * time.Minute
+	return time.Duration(ezcfg.GetInt64(ymlDiskListenInterval)) * time.Second
 }
 
 func (receiver yml) DiskCleanPaths() map[string][]string {
@@ -58,17 +36,17 @@ func (receiver yml) DiskCleanPaths() map[string][]string {
 		return cleanPaths
 	}
 	for _, path := range listenPaths {
-		cleanPaths[path] = receiver.data.Get(fmt.Sprintf(ymlDiskCleanXPath, path)).([]string)
+		cleanPaths[path] = ezcfg.GetArray[string](fmt.Sprintf(ymlDiskCleanXPath, path))
 	}
 	return cleanPaths
 }
 
 func (receiver yml) DiskCleanRuleWhenUsage() float64 {
-	return receiver.data.Float64(ymlDiskCleanRuleWhenUsage)
+	return ezcfg.GetFloat64(ymlDiskCleanRuleWhenUsage)
 }
 
 func (receiver yml) DiskCleanRuleIncludeSuffixes() []string {
-	suffix := receiver.data.String(ymlDiskCleanRuleIncludeSuffix)
+	suffix := ezcfg.GetString(ymlDiskCleanRuleIncludeSuffix)
 	if suffix == "" {
 		return []string{}
 	}
@@ -76,7 +54,7 @@ func (receiver yml) DiskCleanRuleIncludeSuffixes() []string {
 }
 
 func (receiver yml) DiskCleanRuleExcludeSuffixes() []string {
-	suffix := receiver.data.String(ymlDiskCleanRuleExcludeSuffix)
+	suffix := ezcfg.GetString(ymlDiskCleanRuleExcludeSuffix)
 	if suffix == "" {
 		return []string{}
 	}
@@ -84,5 +62,5 @@ func (receiver yml) DiskCleanRuleExcludeSuffixes() []string {
 }
 
 func (receiver yml) DiskCleanRuleBeforeTime() time.Duration {
-	return time.Duration(receiver.data.Int64(ymlDiskCleanRuleBeforeTime))
+	return time.Duration(ezcfg.GetInt64(ymlDiskCleanRuleBeforeTime))
 }

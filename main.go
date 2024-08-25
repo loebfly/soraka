@@ -9,7 +9,6 @@ import (
 	_ "github.com/swaggo/files"
 	_ "github.com/swaggo/gin-swagger"
 	"net/http"
-	"soraka/define"
 	"soraka/schedule"
 )
 
@@ -29,8 +28,6 @@ func main() {
 			},
 		},
 	})
-
-	define.Setup()
 
 	schedule.Start()
 

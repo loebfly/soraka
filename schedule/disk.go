@@ -4,6 +4,7 @@ import (
 	"github.com/loebfly/ezgin/ezlogs"
 	"github.com/shirou/gopsutil/v4/disk"
 	"soraka/define"
+	"soraka/service"
 	"time"
 )
 
@@ -35,7 +36,6 @@ func (receiver diskSchedule) Start() {
 	diskCleanPaths := define.Yml.DiskCleanPaths()
 	diskCleanRuleWhenUsage := define.Yml.DiskCleanRuleWhenUsage()
 	ticker := time.NewTicker(define.Yml.DiskListenInterval())
-	defer ticker.Stop()
 	for range ticker.C {
 		for _, listenPath := range diskListenPaths {
 			receiver.checkDiskUsage(listenPath, diskCleanRuleWhenUsage, diskCleanPaths[listenPath])
@@ -44,24 +44,20 @@ func (receiver diskSchedule) Start() {
 }
 
 func (receiver diskSchedule) checkDiskUsage(listenPath string, diskCleanRuleWhenUsage float64, cleanPaths []string) {
+	ezlogs.Info("获取{}磁盘使用率...", listenPath)
 	usageStat, err := disk.Usage(listenPath)
 	if err != nil {
-		ezlogs.Error("获取{}磁盘使用率失败, err:", listenPath, err)
+		ezlogs.Error("获取{}磁盘使用率失败, err: {}, 请检查配置!", listenPath, err.Error())
 		return
 	}
 
 	usagePercent := usageStat.UsedPercent
-
 	if usagePercent > diskCleanRuleWhenUsage {
 		ezlogs.Error("{}磁盘使用率超过{}%，开始清理文件!", listenPath, diskCleanRuleWhenUsage)
 		for _, cleanPath := range cleanPaths {
-			receiver.cleanDirFiles(cleanPath)
+			service.DiskService.DelPath(cleanPath)
 		}
 	} else {
 		ezlogs.Info("{}磁盘使用率为{}%，未超过{}%，无需清理文件!", listenPath, usagePercent, diskCleanRuleWhenUsage)
 	}
-}
-
-func (receiver diskSchedule) cleanDirFiles(dir string) {
-	// Clean up files in the specified directory
 }
