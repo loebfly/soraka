@@ -9,6 +9,8 @@ import (
 	_ "github.com/swaggo/files"
 	_ "github.com/swaggo/gin-swagger"
 	"net/http"
+	"soraka/define"
+	"soraka/schedule"
 )
 
 // @title soraka API
@@ -27,6 +29,10 @@ func main() {
 			},
 		},
 	})
+
+	define.Setup()
+
+	schedule.Start()
 
 	ezgin.ShutdownWhenExitSignal()
 }

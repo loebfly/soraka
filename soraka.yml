@@ -1,0 +1,35 @@
+ezgin:
+  app: # 应用配置
+    name: soraka # 应用名称
+    port: 9527 # 应用http端口, 默认为8080
+    debug: true # 是否开启debug模式, 默认false, 如果开启, 则不会被其他服务调用
+    version: 1.0.0 # 应用版本号
+    env: test # 应用环境, test, dev, prod
+
+  gin: # gin配置
+    mode: debug # gin模式, debug, release
+    middleware: recover # gin中间件, 用逗号分隔, 不填则默认全部开启, - 表示不开启
+
+  logs: # 日志配置
+    level: debug # 日志级别, debug > info > warn > error, 默认debug即全部输出, - 表示不开启
+    out: console #日志输出方式, 可选值: console, file, 默认 console
+
+  i18n: # 国际化配置
+    app_name: "-" # i18n应用名称, - 表示不开启
+
+#disk: # 磁盘路径
+#  listen:
+#    path: # 磁盘装载路径
+#      - "/System/Volumes/Data" # 本机磁盘路径
+#      - "/Volumes/QingGe"
+#    interval: 60 # 监听磁盘路径间隔, 默认为60秒
+#  clean: # 清理磁盘配置
+#    /System/Volumes/Data: # 和listen.path一一对应
+#       - "/Users/luchunqing/Desktop/temp" # 需要清理的文件路径
+#    /Volumes/QingGe:
+#       - "/Volumes/QingGe/temp"
+#    rule: # 清理规则
+#      when_usage: 80 # 当磁盘使用率超过多少时, 默认为80%
+#      include_suffix: .log,.txt # 包含规则, 默认包含所有文件, 多个用逗号分隔, 例如: .log,.txt
+#      exclude_suffix: .log,.txt # 排除规则, 默认为不排除任何文件, 多个用逗号分隔, 例如: .log,.txt
+#      before_time: 0 # 清理多少天之前的文件, 默认为0天，表示不限制，允许删所有指定路径下的所有文件
